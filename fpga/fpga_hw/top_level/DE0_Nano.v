@@ -46,243 +46,208 @@ module DE0_Nano(
 	//////////// SW //////////
 	SW,
 
-	//////////// SDRAM //////////
-	DRAM_ADDR,
-	DRAM_BA,
-	DRAM_CAS_N,
-	DRAM_CKE,
-	DRAM_CLK,
-	DRAM_CS_N,
-	DRAM_DQ,
-	DRAM_DQM,
-	DRAM_RAS_N,
-	DRAM_WE_N,
-	
-	//////////// ECPS //////////
-	EPCS_ASDO,
-	EPCS_DATA0,
-	EPCS_DCLK,
-	EPCS_NCSO,
-
-	//////////// Accelerometer and EEPROM //////////
-	G_SENSOR_CS_N,
-	G_SENSOR_INT,
-	I2C_SCLK,
-	I2C_SDAT,
-
 	//////////// ADC //////////
-	ADC_CS_N,
-	ADC_SADDR,
-	ADC_SCLK,
-	ADC_SDAT,
-
-	//////////// 2x13 GPIO Header //////////
-	GPIO_2,
-	GPIO_2_IN,
+	ADC_CONVST,
+	ADC_SDI,
+	ADC_SCK,
+	ADC_SDO,
 
 	//////////// GPIO_0, GPIO_0 connect to GPIO Default //////////
 	GPIO_0,
-	GPIO_0_IN,
 
 	//////////// GPIO_1, GPIO_1 connect to GPIO Default //////////
-	GPIO_1,
-	GPIO_1_IN 
-);
+	GPIO_1
+	);
 
-//=======================================================
-//  PARAMETER declarations
-//=======================================================
-
-
-//=======================================================
-//  PORT declarations
-//=======================================================
-
-//////////// CLOCK //////////
-input 		          		CLOCK_50;
-
-//////////// LED //////////
-output		     [7:0]		LED;
-
-//////////// KEY //////////
-input 		     [1:0]		KEY;
-
-//////////// SW //////////
-input 		     [3:0]		SW;
-
-//////////// SDRAM //////////
-output		    [12:0]		DRAM_ADDR;
-output		     [1:0]		DRAM_BA;
-output		          		DRAM_CAS_N;
-output		          		DRAM_CKE;
-output		          		DRAM_CLK;
-output		          		DRAM_CS_N;
-inout 		    [15:0]		DRAM_DQ;
-output		     [1:0]		DRAM_DQM;
-output		          		DRAM_RAS_N;
-output		          		DRAM_WE_N;
-
-//////////// EPCS //////////
-output		          		EPCS_ASDO;
-input 		          		EPCS_DATA0;
-output		          		EPCS_DCLK;
-output		          		EPCS_NCSO;
-
-//////////// Accelerometer and EEPROM //////////
-output		          		G_SENSOR_CS_N;
-input 		          		G_SENSOR_INT;
-output							I2C_SCLK;
-inout 		          		I2C_SDAT;
-
-//////////// ADC //////////
-output		          		ADC_CS_N;
-output		          		ADC_SADDR;
-output		          		ADC_SCLK;
-input 		          		ADC_SDAT;
-
-//////////// 2x13 GPIO Header //////////
-inout 		    [12:0]		GPIO_2;
-input 		     [2:0]		GPIO_2_IN;
-
-//////////// GPIO_0, GPIO_0 connect to GPIO Default //////////
-inout 		    [33:0]		GPIO_0;
-input 		     [1:0]		GPIO_0_IN;
-
-//////////// GPIO_1, GPIO_1 connect to GPIO Default //////////
-inout 		    [33:0]		GPIO_1;
-input 		     [1:0]		GPIO_1_IN;
+	//=======================================================
+	//  PARAMETER declarations
+	//=======================================================
 
 
-//=======================================================
-//  REG/WIRE declarations
-//=======================================================
-wire reset_n;
-wire select_i2c_clk;
-wire i2c_clk;
-wire spi_clk;
+	//=======================================================
+	//  PORT declarations
+	//=======================================================
 
-wire [33:0] gpio_0_wire;
-wire [33:0] gpio_1_wire;
-wire [12:0] gpio_2_wire;
-wire [3:0]  led_wire;
+	//////////// CLOCK //////////
+	input 		          		CLOCK_50;
 
-wire error, power;
-wire [2:0] voltage_mux;
-wire extra;
+	//////////// LED //////////
+	output		     [7:0]		LED;
 
-//=======================================================
-//  Structural coding
-//=======================================================
+	//////////// KEY //////////
+	input 		     [1:0]		KEY;
 
-assign reset_n = 1'b1;
-assign GPIO_1[33] = power;
-assign {GPIO_1[29], GPIO_1[31], GPIO_1[25]} = voltage_mux;
-//assign LED[3:0] = {4{gpio_2_wire[5]}};
-//assign led_wire = {gpio_0_wire[25], gpio_0_wire[24], gpio_0_wire[21], gpio_0_wire[20]};
-
-wire[3:0] random;
-global_disable #(
-  .NUM_IN(3),
-  .NUM_IOS(34+13+4)
-) dis_inst(
-  .clk(CLOCK_50),
-  .shutdown(~{KEY, power}),
-  .gpio_in({gpio_0_wire, gpio_2_wire, led_wire}),
-  .gpio_out_default({{34{1'b0}}, {7{1'b0}}, {1'b1}, {5{1'b0}}, {4{1'b0}}}), // GPIO_2[5] defaults to 1
-  .gpio_out({GPIO_0, GPIO_2[12:6], extra, GPIO_2[4:0], random})
-);
-
-// assign IMU reset to low
-assign gpio_2_wire[9] = 1'b0;
-assign GPIO_0[25:24] = 2'b0;
-assign GPIO_0[21:20] =2'b0;
-
-wire[3:0] useless;
-
-DE0_Nano_SOPC DE0_Nano_SOPC_inst(
-                      // global signals:
-                       .altpll_io(),
-                       .altpll_sdram(DRAM_CLK),
-                       .altpll_sys(),
-                       .clk_50(CLOCK_50),
-                       .reset_n(reset_n),
-
-			
-                      // GPIO pins to Avalon slave(s)
-							 // Channel order: stack 3 ch1, stack 3 ch2, stack 4 ch1, stack 4 ch2, stack 4 ch3, stack 4 ch4
-							 // Pin order for each motor controller {Right HHB right in, Right HHB left in, Left HHB right in, Left HHG left in}
-							 // See stack pinlist for details
-                       .GPIO_out_from_the_motor_controller_0({/*gpio_0_wire[25], gpio_0_wire[24], gpio_0_wire[21], gpio_0_wire[20]*/useless,
-																				  gpio_0_wire[29], gpio_0_wire[28], gpio_0_wire[33], gpio_0_wire[32], 
-																				  gpio_0_wire[4], gpio_0_wire[5], gpio_0_wire[8], gpio_0_wire[9], 
-																				  gpio_0_wire[12], gpio_0_wire[13], gpio_0_wire[16], gpio_0_wire[17], 
-																				  LED[7:0]}),
-
-                      // Clocks for the IMU
-                      .sys_clk_to_the_imu_controller_0(CLOCK_50),
-                      .ADC_CS_N_from_the_imu_controller_0(ADC_CS_N),
-                      .ADC_SADDR_from_the_imu_controller_0(ADC_SADDR),
-                      .ADC_SCLK_from_the_imu_controller_0(ADC_SCLK),
-                      .ADC_SDAT_to_the_imu_controller_0(ADC_SDAT),
-
-                      // RS232 Signals (add signals later)
-                      .UART_RXD_to_the_RS232_0(!power || GPIO_2[5]), // 1 if power is off
-                      .UART_TXD_from_the_RS232_0(gpio_2_wire[7]),
-
-                      // Power Management
-                      .data_to_the_power_management_slave_0(GPIO_1[27]),
-                      .mux_from_the_power_management_slave_0(voltage_mux),
-                      .kill_sw_from_the_power_management_slave_0(power),
-
-                      // the_select_i2c_clk
-                       .out_port_from_the_select_i2c_clk(select_i2c_clk),
-
-                      // the_altpll_0
-                       .locked_from_the_altpll_0(),
-                       .phasedone_from_the_altpll_0(),
-
-                      // the_epcs
-                       .data0_to_the_epcs(EPCS_DATA0), 
-                       .dclk_from_the_epcs(EPCS_DCLK), 
-                       .sce_from_the_epcs(EPCS_NCSO), 
-                       .sdo_from_the_epcs(EPCS_ASDO), 
+	//////////// SW //////////
+	input 		     [3:0]		SW;
 
 
-                      // the_gsensor_spi
-                       .SPI_CS_n_from_the_gsensor_spi(G_SENSOR_CS_N),
-                       .SPI_SCLK_from_the_gsensor_spi(spi_clk),
-                       .SPI_SDIO_to_and_from_the_gsensor_spi(I2C_SDAT),	
+	//////////// ADC //////////
+	output		          		ADC_CONVST;
+	output		          		ADC_SDI;
+	output		          		ADC_SCK;
+	input 		          		ADC_SDO;
+
+	//////////// GPIO_0, GPIO_0 connect to GPIO Default //////////
+	inout 		    [35:0]		GPIO_0;
+
+	//////////// GPIO_1, GPIO_1 connect to GPIO Default //////////
+	inout 		    [35:0]		GPIO_1;
 
 
-                      // the_g_sensor_int
-                       .in_port_to_the_g_sensor_int(G_SENSOR_INT),
+	//=======================================================
+	//  REG/WIRE declarations
+	//=======================================================
+	wire reset_n;
 
-                      // the_i2c_scl
-                       .out_port_from_the_i2c_scl(i2c_clk),
+	wire power;
+	wire [2:0] voltage_mux;
+	wire imu_in, IMU_IN;
+	wire leakdetect;	
+	wire [5:0] extra_signals;
+	
+	//motor pin wires
+	wire [3:0] HB1, HB2, HB3, HB4, HB5, HB6, HB7, HB8;
+	wire [3:0] hb1, hb2, hb3, hb4, hb5, hb6, hb7, hb8;
+	
+	//pneumatics wires (currently unused)
+	wire [1:0] PN1, PN2, PN3, PN4, PN5, PN6, PN7, PN8;
+	//assign PN1 = 2'b0, PN2 = 2'b0, PN3 = 2'b0, PN4 = 2'b0, PN5 = 2'b0, PN6 = 2'b0, PN7 = 2'b0, PN8 = 2'b0;
+	
+	wire dual_ch0_A, dual_ch0_B, dual_ch1_A, dual_ch1_B; // inputs
+	wire dual_ch0_sclk, dual_ch0_cs, dual_ch1_sclk, dual_ch1_cs; //outputs
+	
+	
 
-                      // the_i2c_sda
-                       .bidir_port_to_and_from_the_i2c_sda(I2C_SDAT),
 
-                      // the_key
-                       .in_port_to_the_key(KEY),
+	//=======================================================
+	//  Structural coding
+	//=======================================================
 
-                      // the_sdram
-                       .zs_addr_from_the_sdram(DRAM_ADDR),
-                       .zs_ba_from_the_sdram(DRAM_BA),
-                       .zs_cas_n_from_the_sdram(DRAM_CAS_N),
-                       .zs_cke_from_the_sdram(DRAM_CKE),
-                       .zs_cs_n_from_the_sdram(DRAM_CS_N),
-                       .zs_dq_to_and_from_the_sdram(DRAM_DQ),
-                       .zs_dqm_from_the_sdram(DRAM_DQM),
-                       .zs_ras_n_from_the_sdram(DRAM_RAS_N),
-                       .zs_we_n_from_the_sdram(DRAM_WE_N),
+	assign reset_n = 1'b1;
+	assign GPIO_0[35] = power; //led1_enable;
+	assign GPIO_0[34] = power;
+	assign {GPIO_0[26], GPIO_0[28], GPIO_0[30]} = voltage_mux;
+	assign LED[0] = power;
+	assign LED[1] = IMU_IN;
+	assign LED[2] = GPIO_0[14];
+	
+	assign extra_signals = 6'b0;
+	assign {GPIO_1[1], GPIO_1[0], GPIO_1[2], GPIO_1[4], GPIO_1[6], GPIO_1[8]} = extra_signals; 
 
-                      // the_sw
-                       .in_port_to_the_sw(SW)
-                    );
+	wire[3:0] random;
+	global_disable #(
+	  .NUM_IN(3),
+	  .NUM_IOS(49)
+	) dis_inst(
+	  .clk(CLOCK_50),
+	  .shutdown(~{KEY, power}),
+	  .gpio_in({hb1, hb2, hb3, hb4, hb5, hb6, hb7, hb8, imu_in, 16'b0}),
+	  .gpio_out_default({49'b0}),
+	  .gpio_out({HB1, HB2, HB3, HB4, HB5, HB6, HB7, HB8, IMU_IN, PN1, PN2, PN3, PN4, PN5, PN6, PN7, PN8})
+	);
+	
+	//motor wires ordered {forward hhb top, forward hhb bot, reverse hhb top, reverse hhb bot}
+	//hhb = half h-bridge
+	assign {GPIO_0[11], GPIO_0[13], GPIO_0[15], GPIO_0[17]} = HB1;
+	assign {GPIO_0[5], GPIO_0[3], GPIO_0[9], GPIO_0[7]} = HB2;
+	assign {GPIO_0[29], GPIO_0[27], GPIO_0[33], GPIO_0[31]} = HB3;
+	assign {GPIO_0[19], GPIO_0[21], GPIO_0[23], GPIO_0[25]} = HB4;
+	assign {GPIO_1[11], GPIO_1[13], GPIO_1[15], GPIO_1[17]} = HB5;
+	assign {GPIO_1[5], GPIO_1[3], GPIO_1[9], GPIO_1[7]} = HB6;
+	assign {GPIO_1[29], GPIO_1[27], GPIO_1[33], GPIO_1[31]} = HB7;
+	assign {GPIO_1[19], GPIO_1[21], GPIO_1[23], GPIO_1[25]} = HB8;
+	
+	
+	assign {GPIO_0[12], GPIO_0[10]} = PN1;
+	assign {GPIO_0[8], GPIO_0[6]} = PN2;
+	assign {GPIO_1[24], GPIO_1[22]} = PN3;
+	assign {GPIO_1[28], GPIO_1[26]} = PN4;
+	assign {GPIO_1[32], GPIO_1[30]} = PN5;
+	assign {GPIO_1[35], GPIO_1[34]} = PN6;
+	assign {GPIO_0[4], GPIO_0[2]} = PN7;
+	assign {GPIO_0[0], GPIO_0[1]} = PN8;
 
-						  
-assign I2C_SCLK = (select_i2c_clk)?i2c_clk:spi_clk;
+	// assign IMU reset to low
+	reg imu_reset = 1'b0;
+	assign GPIO_1[14] = imu_reset;
+	assign GPIO_0[20] = IMU_IN;
+	
+	//sonar assignments
+	assign dual_ch0_A = GPIO_1[18];
+	assign dual_ch0_B = GPIO_1[16];
+	assign dual_ch1_A = GPIO_0[18];
+	assign dual_ch1_B = GPIO_0[16];
+	
+	assign dual_ch0_sclk = 1'b0;
+	assign dual_ch0_cs = 1'b0;
+	assign dual_ch1_sclk = 1'b0;
+	assign dual_ch1_cs = 1'b0;
+	assign GPIO_0[22] = dual_ch0_sclk;
+	assign GPIO_0[24] = dual_ch0_cs;
+	assign GPIO_1[10] = dual_ch1_sclk;
+	assign GPIO_1[12] = dual_ch1_cs;
+	
+	assign leakdetect = GPIO_1[20];
+	
+	reg [6:0] counter = 7'b0;
+	reg prev_power = 1'b0;
+	always@(posedge CLOCK_50) begin
+		prev_power <= power;
+		imu_reset <= 1'b0;
+		if (power & !prev_power) begin
+			if (counter < 7'd100) begin
+				counter <= counter + 7'b1;
+				prev_power <= 1'b0;
+				imu_reset <= 1'b1;
+			end
+			else begin
+				counter <= 7'b0;
+			end
+		end
+	end
+
+	DE0_Nano_SOPC DE0_Nano_SOPC_inst(
+						//global signals
+						.clk_50(CLOCK_50),                                    	//                        clk_50_clk_in.clk
+						.reset_n(KEY[0]),                                   		//                  clk_50_clk_in_reset.reset_n
+						
+						//power management signals
+						.kill_sw_from_the_power_management_slave_0(power), 		// power_management_slave_0_conduit_end.kill_sw
+						.mux_from_the_power_management_slave_0(voltage_mux),     //                                     .mux
+						.data_to_the_power_management_slave_0(GPIO_0[32]),      	//                                     .data
+						
+						//Motor pins
+						.GPIO_out_from_the_motor_controller_0 ({hb1, hb2, hb3, hb4, hb5, hb6, hb7, hb8}), //       motor_controller_0_conduit_end.export
+	
+						//IMU signals
+						.UART_RXD_to_the_RS232_0(!power || GPIO_0[14]),                   //                  RS232_0_conduit_end.export
+						.UART_TXD_from_the_RS232_0(imu_in),                 				//                RS232_0_conduit_end_1.export
+						
+						//ADC signals primarily used for depth sensor
+						.adc_controller_0_conduit_end_sys_clk(CLOCK_50),      	//         adc_controller_0_conduit_end.sys_clk
+						.adc_controller_0_conduit_end_ADC_CONVST(ADC_CONVST),   	//                                     .ADC_CONVST
+						.adc_controller_0_conduit_end_ADC_SDI(ADC_SDI),      		//                                     .ADC_SDI
+						.adc_controller_0_conduit_end_ADC_SCK(ADC_SCK),      		//                                     .ADC_SCK
+						.adc_controller_0_conduit_end_ADC_SDO(ADC_SDO),      		//                                     .ADC_SDO
+						
+						//keys and switches
+						.in_port_to_the_key(KEY),                        			//              key_external_connection.export
+						.in_port_to_the_sw(SW),                          			//               sw_external_connection.export
+						.out_port_from_the_led(),                     				//              led_external_connection.export
+						
+						//pll signals (unused)
+						.pll_0_locked_export(),                       				//                         pll_0_locked.export
+						.pll_0_outclk1_clk(),                         				//                        pll_0_outclk1.clk
+						.pll_0_outclk3_clk(),                         				//                        pll_0_outclk3.clk
+						.pll_adc_clk(),                               				//                              pll_adc.clk
+						.pll_io_clk(),                                				//                               pll_io.clk
+						.pll_sys_clk()                               				//                              pll_sys.clk
+	);
+
+	
+
+							  
+	//assign I2C_SCLK = (select_i2c_clk)?i2c_clk:spi_clk;
 
 endmodule
 

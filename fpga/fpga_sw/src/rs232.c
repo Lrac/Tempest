@@ -21,7 +21,8 @@ There are some specific hacks to work with our VectorNav IMU that you will need 
 #define RS232_READ_INTERRUPT 1
 
 #define BUF_LEN 250
-#define READ_BUF_LEN 34
+#define READ_BUF_LEN 34 //$VNYMR,8char-Yaw,8char-Pitch,8char-Roll, = 34 chars
+//add another 48 to len if you want to read MagX, MagY, MagZ, AccelX, AccelY, AccelZ
 #define WRITE_ATTEMPTS 16
 
 #define ATTITUDE_STRING "$VNYMR"

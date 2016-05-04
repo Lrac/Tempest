@@ -215,7 +215,7 @@ void process_command(char *st)
       print_int(orientation.roll);
       alt_putchar('\n');
       break;
-    case COMMAND_ACCEL_X:
+    /*case COMMAND_ACCEL_X:
       get_accel(&accel_data);
       print_int(accel_data.x);
       alt_putchar('\n');
@@ -230,6 +230,7 @@ void process_command(char *st)
       print_int(accel_data.z);
       alt_putchar('\n');
       break;
+*/
     case COMMAND_DEPTH:
       i = get_user_depth();
       print_int(i);

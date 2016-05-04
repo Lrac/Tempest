@@ -35,13 +35,13 @@ module motor_controller (input clk, input on, input [15:0] period, input [15:0] 
   // duty_cycle corresponding to 50% of the period.
   // Note the integer division for duty_cycle_at_half. This implies that period should be even or that when passing duty_cycle
   // you'll have to make sure you also integer divide (eg. floor of 9/2 = 1001>>1 = 4).
-  wire 	duty_cycle_at_half = period >> 1; 
+  wire [`PERIOD_LENGTH-1:0] duty_cycle_at_half = period >> 1; 
   // duty_cycle CENTERED AT ZERO. Eg. if orginal cycle >%50 percent, new cycle = (org_cycle-cycle_at_half)x2.
   // the result is multiplied by 2 to scale up to the period.
-  wire 	corrected_duty_cycle = (duty_cycle>=duty_cycle_at_half)? (duty_cycle-duty_cycle_at_half)<<1 : (duty_cycle_at_half-duty_cycle)<<1
+  wire [`PERIOD_LENGTH-1:0] corrected_duty_cycle = (duty_cycle>=duty_cycle_at_half)? (duty_cycle-duty_cycle_at_half)<<1 : (duty_cycle_at_half-duty_cycle)<<1;
   // want to call this _dir... but there is conflict in naming.
   // This variable will be set to dir_reg under pwm on state.
-  wire 	_dir = (duty_cycle>=duty_cycle_at_half && on)? 1 : 0;
+  wire 	_dir = (duty_cycle>=duty_cycle_at_half && on)? 1'b1 : 1'b0;
 
   
   // Updated on posedge so each duty_counter increment correspond to 1 cycle
@@ -49,14 +49,14 @@ module motor_controller (input clk, input on, input [15:0] period, input [15:0] 
   always @(posedge clk)
   begin
 	if (duty_counter == period)
-      duty_counter <= 0;
+      duty_counter <= 16'b0;
 	else
-      duty_counter <= duty_counter + 1;
+      duty_counter <= duty_counter + 16'b1;
 		
 	// sets the dir_reg... pwm off : pwm on
-	dir_reg <= (duty_counter < duty_cycle) ? on : _dir;
+	dir_reg <= (duty_counter < corrected_duty_cycle) ? on : _dir;
 	// sets the on_reg... pwm off : pwm on 
-	on_reg <= (duty_counter < duty_cycle) ? 0 : on&&(duty_cycle!=duty_cycle_at_half);
+	on_reg <= (duty_counter < corrected_duty_cycle) ? 1'b0 : on&&(corrected_duty_cycle!=duty_cycle_at_half);
   end
 
   // Instantiate module. See module below

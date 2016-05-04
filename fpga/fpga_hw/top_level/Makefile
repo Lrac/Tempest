@@ -10,7 +10,8 @@
 
 PROJECT=DE0_Nano
 SOPC_FILE=DE0_Nano_SOPC.qsys
-SOPC_PATH=$(PROJECT)_SOPC/synthesis/submodules/
+SOPC_PATH=$(PROJECT)_SOPC/synthesis/
+SOPC_SUBMODULES=$(SOPC_PATH)/submodules/
 SOPCINFO_FILE=$(SOPC_FILE)info
 SOPCINFO_FILE_DEPENDS=$(SOPC_FILE)
 SOURCE_FILES = DE0_Nano.v $(SOPCINFO_FILE)
@@ -44,8 +45,10 @@ smart: smart.log
 # Executable Configuration
 ###################################################################
 
-MAP_ARGS = --family=CycloneIVE
-FIT_ARGS = --part=EP4CE22F17C6
+#previously family CycloneIVE part EP4CE22F17C6
+
+MAP_ARGS = --family=CycloneV
+FIT_ARGS = --part=5CSEMA4U23C6
 ASM_ARGS =
 STA_ARGS =
 
@@ -56,11 +59,11 @@ STA_ARGS =
 STAMP = echo done >
 
 $(SOPCINFO_FILE): $(SOPCINFO_FILE_DEPENDS)
-	qsys-generate $(SOPC_FILE) --synthesis=VERILOG || [ $$? -eq 4]
+	qsys-generate $(SOPC_FILE) --synthesis=VERILOG -bsf || [ $$? -eq 4]
 	#sopc_builder --generate $(SOPC_FILE) || [ $$? -eq 4 ]
 
 $(PROJECT).map.rpt: map.chg $(SOURCE_FILES) 
-	quartus_map $(MAP_ARGS) -l $(SOPC_PATH) $(PROJECT)
+	quartus_map $(MAP_ARGS) -l $(SOPC_PATH) -l $(SOPC_SUBMODULES) $(PROJECT)
 	$(STAMP) fit.chg
 
 $(PROJECT).fit.rpt: fit.chg $(PROJECT).map.rpt

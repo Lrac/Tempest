@@ -1,4 +1,4 @@
-// (C) 2001-2013 Altera Corporation. All rights reserved.
+// (C) 2001-2015 Altera Corporation. All rights reserved.
 // Your use of Altera Corporation's design tools, logic functions and other 
 // software and tools, and its AMPP partner logic functions, and any output 
 // files any of the foregoing (including device programming or simulation 
@@ -11,18 +11,18 @@
 // agreement for further details.
 
 
-// $Id: //acds/rel/13.1/ip/merlin/altera_irq_mapper/altera_irq_mapper.sv.terp#1 $
+// $Id: //acds/rel/15.1/ip/merlin/altera_irq_mapper/altera_irq_mapper.sv.terp#1 $
 // $Revision: #1 $
-// $Date: 2013/08/11 $
+// $Date: 2015/08/09 $
 // $Author: swbranch $
 
 // -------------------------------------------------------
 // Altera IRQ Mapper
 //
 // Parameters
-//   NUM_RCVRS        : 8
+//   NUM_RCVRS        : 6
 //   SENDER_IRW_WIDTH : 32
-//   IRQ_MAP          : 0:6,1:7,2:5,3:4,4:3,5:2,6:0,7:1
+//   IRQ_MAP          : 0:0,1:1,2:2,3:3,4:6,5:7
 //
 // -------------------------------------------------------
 
@@ -45,8 +45,6 @@ module DE0_Nano_SOPC_irq_mapper
     input                receiver3_irq,
     input                receiver4_irq,
     input                receiver5_irq,
-    input                receiver6_irq,
-    input                receiver7_irq,
 
     // -------------------
     // Command Source (Output)
@@ -58,14 +56,12 @@ module DE0_Nano_SOPC_irq_mapper
     always @* begin
 	sender_irq = 0;
 
-        sender_irq[6] = receiver0_irq;
-        sender_irq[7] = receiver1_irq;
-        sender_irq[5] = receiver2_irq;
-        sender_irq[4] = receiver3_irq;
-        sender_irq[3] = receiver4_irq;
-        sender_irq[2] = receiver5_irq;
-        sender_irq[0] = receiver6_irq;
-        sender_irq[1] = receiver7_irq;
+        sender_irq[0] = receiver0_irq;
+        sender_irq[1] = receiver1_irq;
+        sender_irq[2] = receiver2_irq;
+        sender_irq[3] = receiver3_irq;
+        sender_irq[6] = receiver4_irq;
+        sender_irq[7] = receiver5_irq;
     end
 
 endmodule

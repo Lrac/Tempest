@@ -1,4 +1,4 @@
-// (C) 2001-2013 Altera Corporation. All rights reserved.
+// (C) 2001-2015 Altera Corporation. All rights reserved.
 // Your use of Altera Corporation's design tools, logic functions and other 
 // software and tools, and its AMPP partner logic functions, and any output 
 // files any of the foregoing (including device programming or simulation 
@@ -11,9 +11,9 @@
 // agreement for further details.
 
 
-// $Id: //acds/rel/13.1/ip/merlin/altera_avalon_mm_clock_crossing_bridge/altera_avalon_mm_clock_crossing_bridge.v#1 $
+// $Id: //acds/rel/15.1/ip/merlin/altera_avalon_mm_clock_crossing_bridge/altera_avalon_mm_clock_crossing_bridge.v#1 $
 // $Revision: #1 $
-// $Date: 2013/08/11 $
+// $Date: 2015/08/09 $
 // $Author: swbranch $
 // --------------------------------------
 // Avalon-MM clock crossing bridge
@@ -31,7 +31,7 @@ module altera_avalon_mm_clock_crossing_bridge
 #(
     parameter DATA_WIDTH            = 32,
     parameter SYMBOL_WIDTH          = 8,
-    parameter ADDRESS_WIDTH         = 10,
+    parameter HDL_ADDR_WIDTH        = 10,
     parameter BURSTCOUNT_WIDTH      = 1,
 
     parameter COMMAND_FIFO_DEPTH    = 4,
@@ -57,7 +57,7 @@ module altera_avalon_mm_clock_crossing_bridge
     output                          s0_readdatavalid,
     input  [BURSTCOUNT_WIDTH-1:0]   s0_burstcount,
     input  [DATA_WIDTH-1:0]         s0_writedata,
-    input  [ADDRESS_WIDTH-1:0]      s0_address, 
+    input  [HDL_ADDR_WIDTH-1:0]     s0_address, 
     input                           s0_write,  
     input                           s0_read,  
     input  [BYTEEN_WIDTH-1:0]       s0_byteenable,  
@@ -68,14 +68,14 @@ module altera_avalon_mm_clock_crossing_bridge
     input                           m0_readdatavalid,
     output [BURSTCOUNT_WIDTH-1:0]   m0_burstcount,
     output [DATA_WIDTH-1:0]         m0_writedata,
-    output [ADDRESS_WIDTH-1:0]      m0_address, 
+    output [HDL_ADDR_WIDTH-1:0]     m0_address, 
     output                          m0_write,  
     output                          m0_read,  
     output [BYTEEN_WIDTH-1:0]       m0_byteenable,
     output                          m0_debugaccess
 );
 
-    localparam CMD_WIDTH = BURSTCOUNT_WIDTH + DATA_WIDTH + ADDRESS_WIDTH 
+    localparam CMD_WIDTH = BURSTCOUNT_WIDTH + DATA_WIDTH + HDL_ADDR_WIDTH 
                     + BYTEEN_WIDTH 
                     + 3;        // read, write, debugaccess
 
@@ -135,16 +135,16 @@ module altera_avalon_mm_clock_crossing_bridge
 
         .in_startofpacket   (1'b0),
         .in_endofpacket     (1'b0),
-        .in_empty           ('b0),
-        .in_error           ('b0),
-        .in_channel         ('b0),
-        .in_csr_address     ('b0),
-        .in_csr_read        ('b0),
-        .in_csr_write       ('b0),
+        .in_empty           (1'b0),
+        .in_error           (1'b0),
+        .in_channel         (1'b0),
+        .in_csr_address     (1'b0),
+        .in_csr_read        (1'b0),
+        .in_csr_write       (1'b0),
         .in_csr_writedata   (32'b0),
-        .out_csr_address    ('b0),
-        .out_csr_read       ('b0),
-        .out_csr_write      ('b0),
+        .out_csr_address    (1'b0),
+        .out_csr_read       (1'b0),
+        .out_csr_write      (1'b0),
         .out_csr_writedata  (32'b0)
     );
 
@@ -268,16 +268,16 @@ module altera_avalon_mm_clock_crossing_bridge
 
         .in_startofpacket   (1'b0),
         .in_endofpacket     (1'b0),
-        .in_empty           ('b0),
-        .in_error           ('b0),
-        .in_channel         ('b0),
-        .in_csr_address     ('b0),
-        .in_csr_read        ('b0),
-        .in_csr_write       ('b0),
+        .in_empty           (1'b0),
+        .in_error           (1'b0),
+        .in_channel         (1'b0),
+        .in_csr_address     (1'b0),
+        .in_csr_read        (1'b0),
+        .in_csr_write       (1'b0),
         .in_csr_writedata   (32'b0),
-        .out_csr_address    ('b0),
-        .out_csr_read       ('b0),
-        .out_csr_write      ('b0),
+        .out_csr_address    (1'b0),
+        .out_csr_read       (1'b0),
+        .out_csr_write      (1'b0),
         .out_csr_writedata  (32'b0)  
     );
 

@@ -22,43 +22,43 @@ module slave_controller(input clk, input reset, input chipselect, input write, i
     if (chipselect & write)
     casex (addr)
 		// addr 0-7 are the in's
-      4'b00000:
+      5'b00000:
         in[0] <= writedata[0];
-      4'b00001:
+      5'b00001:
         in[1] <= writedata[0];
-      4'b00010:
+      5'b00010:
         in[2] <= writedata[0];
-      4'b00011:
+      5'b00011:
         in[3] <= writedata[0];
-      4'b00100:
+      5'b00100:
         in[4] <= writedata[0];
-      4'b00101:
+      5'b00101:
         in[5] <= writedata[0];
-		4'b00110:
+		5'b00110:
         in[6] <= writedata[0];
-		4'b00111:
+		5'b00111:
         in[7] <= writedata[0];
 		
 		// addr 8-15 are sets th duties
-      4'b01000:
+      5'b01000:
         duty_cycle[`PERIOD_LENGTH-1:0] <= writedata[`PERIOD_LENGTH-1:0];
-      4'b01001:
+      5'b01001:
         duty_cycle[2*`PERIOD_LENGTH-1:`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH-1:0];
-      4'b01010:
+      5'b01010:
         duty_cycle[3*`PERIOD_LENGTH-1:2*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH-1:0];
-      4'b01011:
+      5'b01011:
         duty_cycle[4*`PERIOD_LENGTH-1:3*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH-1:0];
-      4'b01100:
-        duty_cycle[5*`PERIOD_LENGTH-1:4*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH:0];
-      4'b01101:
-        duty_cycle[6*`PERIOD_LENGTH-1:5*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH:0];
-      4'b01110:
-        duty_cycle[7*`PERIOD_LENGTH-1:6*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH:0];
-      4'b01111:
-        duty_cycle[8*`PERIOD_LENGTH-1:7*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH:0];
+      5'b01100:
+        duty_cycle[5*`PERIOD_LENGTH-1:4*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH-1:0];
+      5'b01101:
+        duty_cycle[6*`PERIOD_LENGTH-1:5*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH-1:0];
+      5'b01110:
+        duty_cycle[7*`PERIOD_LENGTH-1:6*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH-1:0];
+      5'b01111:
+        duty_cycle[8*`PERIOD_LENGTH-1:7*`PERIOD_LENGTH] <= writedata[`PERIOD_LENGTH-1:0];
       
 		// addr 16 for period
-		4'b10000:
+		5'b10000:
         period <= writedata[15:0];
       default:
         ; // do nothing

@@ -209,10 +209,11 @@ int get_pwm_freq()
 // returns depth
 int get_depth()
 {
-  return IORD(IMU_CONTROLLER_0_BASE, 5);
+  return IORD(ADC_CONTROLLER_0_BASE, 5);
 }
 
 // returns a struct of x,y,z acceleration values
+/*
 void get_accel(struct t_accel_data *accel_data)
 {
   IOWR(SELECT_I2C_CLK_BASE, 0, 0x00);
@@ -231,3 +232,4 @@ void get_accel(struct t_accel_data *accel_data)
 
   return;
 }
+*/

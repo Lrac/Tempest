@@ -3,7 +3,7 @@
 #ifndef _MDA_UTILS_H
 #define _MDA_UTILS_H
 
-#include "accelerometer_adxl345_spi.h"
+//#include "accelerometer_adxl345_spi.h"
 
 enum MOTOR_DIR {
   MOTOR_DIR_STOPPED,
@@ -24,7 +24,7 @@ void set_pwm_freq(int);
 void set_pow(int);
 int get_motor_duty_cycle(int);
 int get_pwm_freq();
-void get_accel(struct t_accel_data *);
+//void get_accel(struct t_accel_data *);
 int get_depth();
 
 // API to give commands to NIOS

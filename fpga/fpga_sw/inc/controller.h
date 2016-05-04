@@ -3,6 +3,7 @@
 #ifndef _MDA_CONTROLLER_H
 #define _MDA_CONTROLLER_H
 
+#include <stdbool.h>
 #include "alt_types.h"
 
 #define ABS(x) (((x) > 0) ? (x) : (-(x)))
@@ -58,7 +59,7 @@ void set_target_depth(int depth);
 bool stabilizing_motors_force_to_pwm (
         double f_0, double f_1, double f_2, double f_3,
         double *m_0, double *m_1, double *m_2, double *m_3
-)
+				      );
 
 void get_orientation(struct t_accel_data *accel_data, struct orientation *orientation);
 

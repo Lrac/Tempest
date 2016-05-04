@@ -265,10 +265,10 @@ void calculate_pid()
       //0.5*Roll_Force_Needed + 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed, // m_front_left
       //-0.5*Roll_Force_Needed + 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed, // m_front_right
       //-0.5*Pitch_Force_Needed + 0.4*Depth_Force_Needed, // m_rear
-      	0.25*Roll_Force_Needed + 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed // mp_front_left
-	-0.25*Roll_Force_Needed + 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed // mp_front_right
-	0.25*Roll_Force_Needed - 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed // mp_back_left
-	-0.25*Roll_Force_Needed - 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed // mp_back_right
+				    0.25*Roll_Force_Needed + 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed, // mp_front_left
+				    -0.25*Roll_Force_Needed + 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed, // mp_front_right
+				    0.25*Roll_Force_Needed - 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed, // mp_back_left
+				    -0.25*Roll_Force_Needed - 0.2*Pitch_Force_Needed + 0.2*Depth_Force_Needed, // mp_back_right
 	&mp_front_left, //assumptions: polarity of motors: + pointed towards water surface
       	&mp_front_right, //positive roll is CCW if we are looking at the back O-ring of the submarine
       	&mp_back_left, //positive depth is deeper
@@ -281,7 +281,7 @@ void calculate_pid()
    M_BACK_RIGHT = (int)m_back_right;
    MP_FRONT_LEFT = (int)mp_front_left;
    MP_FRONT_RIGHT = (int)mp_front_right;
-   MP_BACK_LEFT = (int)mp_pback_left;
+   MP_BACK_LEFT = (int)mp_back_left;
    MP_BACK_RIGHT = (int)mp_back_right;
 
 
