@@ -9,6 +9,14 @@
    categories="System" />
  <parameter name="bonusData"><![CDATA[bonusData 
 {
+   element DE0_Nano_SOPC
+   {
+      datum _originalDeviceFamily
+      {
+         value = "Cyclone V";
+         type = "String";
+      }
+   }
    element RS232_0
    {
       datum _sortIndex
@@ -26,7 +34,7 @@
    {
       datum baseAddress
       {
-         value = "17830048";
+         value = "17830112";
          type = "String";
       }
    }
@@ -34,7 +42,7 @@
    {
       datum _sortIndex
       {
-         value = "17";
+         value = "18";
          type = "int";
       }
    }
@@ -42,7 +50,7 @@
    {
       datum baseAddress
       {
-         value = "17830064";
+         value = "17830016";
          type = "String";
       }
    }
@@ -141,7 +149,7 @@
       }
       datum baseAddress
       {
-         value = "17830016";
+         value = "17830080";
          type = "String";
       }
    }
@@ -162,7 +170,7 @@
    {
       datum baseAddress
       {
-         value = "17830056";
+         value = "17830120";
          type = "String";
       }
    }
@@ -272,7 +280,7 @@
    {
       datum _sortIndex
       {
-         value = "18";
+         value = "17";
          type = "int";
       }
    }
@@ -330,7 +338,7 @@
    {
       datum baseAddress
       {
-         value = "17830068";
+         value = "17830128";
          type = "String";
       }
    }
@@ -661,7 +669,7 @@
   <parameter name="dataAddrWidth" value="25" />
   <parameter name="dataMasterHighPerformanceAddrWidth" value="1" />
   <parameter name="dataMasterHighPerformanceMapParam" value="" />
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sw.s1' start='0x0' end='0x10' type='altera_avalon_pio.s1' /><slave name='led.s1' start='0x10' end='0x20' type='altera_avalon_pio.s1' /><slave name='key.s1' start='0x20' end='0x30' type='altera_avalon_pio.s1' /><slave name='sysid.control_slave' start='0x30' end='0x38' type='altera_avalon_sysid_qsys.control_slave' /><slave name='onchip_memory2_0.s1' start='0x1080000' end='0x10C0FB2' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x1100800' end='0x1101000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='motor_controller_0.avalon_slave_0' start='0x1101000' end='0x1101080' type='motor_controller.avalon_slave_0' /><slave name='controller_interrupt_counter.s1' start='0x1101080' end='0x11010A0' type='altera_avalon_timer.s1' /><slave name='RS232_0.avalon_slave_0' start='0x11010A0' end='0x11010A8' type='RS232.avalon_slave_0' /><slave name='jtag_uart.avalon_jtag_slave' start='0x11010A8' end='0x11010B0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='adc_controller_0.avalon_slave_0' start='0x11010B0' end='0x11010B4' type='adc_controller.avalon_slave_0' /><slave name='power_management_slave_0.avalon_slave_0' start='0x11010B4' end='0x11010B8' type='power_management_slave.avalon_slave_0' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='sw.s1' start='0x0' end='0x10' type='altera_avalon_pio.s1' /><slave name='led.s1' start='0x10' end='0x20' type='altera_avalon_pio.s1' /><slave name='key.s1' start='0x20' end='0x30' type='altera_avalon_pio.s1' /><slave name='sysid.control_slave' start='0x30' end='0x38' type='altera_avalon_sysid_qsys.control_slave' /><slave name='onchip_memory2_0.s1' start='0x1080000' end='0x10C0FB2' type='altera_avalon_onchip_memory2.s1' /><slave name='nios2_gen2_0.debug_mem_slave' start='0x1100800' end='0x1101000' type='altera_nios2_gen2.debug_mem_slave' /><slave name='motor_controller_0.avalon_slave_0' start='0x1101000' end='0x1101080' type='motor_controller.avalon_slave_0' /><slave name='adc_controller_0.avalon_slave_0' start='0x1101080' end='0x11010C0' type='adc_controller.avalon_slave_0' /><slave name='controller_interrupt_counter.s1' start='0x11010C0' end='0x11010E0' type='altera_avalon_timer.s1' /><slave name='RS232_0.avalon_slave_0' start='0x11010E0' end='0x11010E8' type='RS232.avalon_slave_0' /><slave name='jtag_uart.avalon_jtag_slave' start='0x11010E8' end='0x11010F0' type='altera_avalon_jtag_uart.avalon_jtag_slave' /><slave name='power_management_slave_0.avalon_slave_0' start='0x11010F0' end='0x11010F4' type='power_management_slave.avalon_slave_0' /></address-map>]]></parameter>
   <parameter name="data_master_high_performance_paddr_base" value="0" />
   <parameter name="data_master_high_performance_paddr_size" value="0" />
   <parameter name="data_master_paddr_base" value="0" />
@@ -1111,7 +1119,7 @@
    start="nios2_gen2_0.data_master"
    end="jtag_uart.avalon_jtag_slave">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x011010a8" />
+  <parameter name="baseAddress" value="0x011010e8" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1129,7 +1137,7 @@
    start="nios2_gen2_0.data_master"
    end="power_management_slave_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x011010b4" />
+  <parameter name="baseAddress" value="0x011010f0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1138,7 +1146,7 @@
    start="nios2_gen2_0.data_master"
    end="RS232_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x011010a0" />
+  <parameter name="baseAddress" value="0x011010e0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1147,7 +1155,7 @@
    start="nios2_gen2_0.data_master"
    end="adc_controller_0.avalon_slave_0">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x011010b0" />
+  <parameter name="baseAddress" value="0x01101080" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection
@@ -1183,7 +1191,7 @@
    start="nios2_gen2_0.data_master"
    end="controller_interrupt_counter.s1">
   <parameter name="arbitrationPriority" value="1" />
-  <parameter name="baseAddress" value="0x01101080" />
+  <parameter name="baseAddress" value="0x011010c0" />
   <parameter name="defaultConnection" value="false" />
  </connection>
  <connection

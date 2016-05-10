@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <preferences>
  <debug showDebugMenu="0" />
- <systemtable filter="All Interfaces" showClockDomains="0" showResetDomains="1">
+ <systemtable filter="All Interfaces" showClockDomains="1" showResetDomains="0">
   <columns>
    <connections preferredWidth="287" />
    <irq preferredWidth="34" />
@@ -16,8 +16,7 @@
   </columns>
  </clocktable>
  <window width="1855" height="1056" x="65" y="24" />
- <library
-   expandedCategories="Library/University Program,Library/Interface Protocols/Transceiver PLL,Library/Basic Functions/Clocks; PLLs and Resets,Library/Basic Functions,Library,Library/Interface Protocols,Library/Basic Functions/Clocks; PLLs and Resets/PLL,Project,Library/University Program/Clock" />
+ <library expandedCategories="Library,Project" />
  <generation path="/home/carl/Tempest/fpga/fpga_hw/top_level" simulation="NONE" />
  <hdlexample language="VERILOG" />
 </preferences>
