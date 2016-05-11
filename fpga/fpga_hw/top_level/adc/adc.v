@@ -72,7 +72,7 @@ GND   ADC1
 
 // ADC connections, on chip
 
-adc_ctrl adc_controller_8_channels (
+ADC_CTRL adc_controller_8_channels (
    .iRST(!reset_n),
    .iCLK(spi_clk),
    .iCLK_n(!spi_clk),

@@ -1,3 +1,15 @@
+/*
+	Reads data from the ADC
+	Currently configured to only read from a single channel
+	Conversion takes between 1.3-1.6us so with a 2MHz iCLK, need to hold oCS for about 4 cycles
+	Afterwards, begin clocking oSCLK
+	ADC will grab oDIN (channel configuration bits) on the first 6 posedges of oSCLK
+	First bit of data from ADC will arrive the moment oCS goes down, then subsequent bits shifted in on the negedge of oSCLK
+	More details on timing and channel configuration can be found in the ADC datasheet (somewhere...)
+	
+	-Carl, May 2016
+*/
+
 module ADC_CTRL   (   
                iRST,
                iCLK,
@@ -20,149 +32,124 @@ module ADC_CTRL   (
                oADC_12_bit_channel_7
             );
                
-input            iRST;
-input            iCLK;
-input            iCLK_n;
-input          iGO;
+	input            iRST;
+	input            iCLK;
+	input            iCLK_n;
+	input          	iGO;
 
-output            oDIN;
-output            oCS;
-output            oSCLK;
-input            iDOUT;
+	output            oDIN;
+	output            oCS;
+	output            oSCLK;
+	input            iDOUT;
 
-output  reg [11:0]    oADC_12_bit_channel_0;
-output  reg [11:0]    oADC_12_bit_channel_1;
-output  reg [11:0]    oADC_12_bit_channel_2;
-output  reg [11:0]    oADC_12_bit_channel_3;
-output  reg [11:0]    oADC_12_bit_channel_4;
-output  reg [11:0]    oADC_12_bit_channel_5;
-output  reg [11:0]    oADC_12_bit_channel_6;
-output  reg [11:0]    oADC_12_bit_channel_7;
+	output  reg [11:0]    oADC_12_bit_channel_0 = 12'b0;
+	output  reg [11:0]    oADC_12_bit_channel_1 = 12'b0;
+	output  reg [11:0]    oADC_12_bit_channel_2 = 12'b0;
+	output  reg [11:0]    oADC_12_bit_channel_3 = 12'b0;
+	output  reg [11:0]    oADC_12_bit_channel_4 = 12'b0;
+	output  reg [11:0]    oADC_12_bit_channel_5 = 12'b0;
+	output  reg [11:0]    oADC_12_bit_channel_6 = 12'b0;
+	output  reg [11:0]    oADC_12_bit_channel_7 = 12'b0;
 
-reg     [2:0]    channel;
-reg               data;
-reg               go_en;
-reg               sclk;
-reg      [3:0]      cont;
-reg      [3:0]      m_cont;
-reg      [11:0]   adc_data;
-reg      [31:0]   adc_counter;
+	reg      [3:0]    count = 4'b0;
+	reg      [3:0]    ch_config = 4'b1111; 	//select ch 7
+	reg					uni = 1'b1; 				//unipolar/~bipolar bit
+	reg					slp = 1'b0; 				//sleep mode bit
+	reg      [11:0]   adc_data = 12'b0;
+	reg 					data_out = 1'b0;
 
-assign   oCS      =   go_en;
-assign   oSCLK      =   (go_en)? iCLK:1;
-assign   oDIN      =   data;
+	assign   oCS      =   (count < 4);
+	assign   oSCLK    =   (count >= 4 && count < 15)? iCLK : 1'b0;
+	assign   oDIN     =   data_out;
 
-always@( iCLK )//posedge iGO or posedge iRST)
-begin
-   if(iRST)
-      go_en   <=   0;
-   else
-   begin
-      if(iGO)
-         go_en   <=   1;
-   end
-end
-
-always@(posedge iCLK or negedge go_en)
-begin
-   if(!go_en)
-      cont   <=   0;
-   else
-   begin
-      if(iCLK)
-         cont   <=   cont + 1;
-   end
-end
-
-always@(posedge iCLK_n)
-begin
-   if(iCLK_n)
-      m_cont   <=   cont;
-end
-
-always@(posedge iCLK_n or negedge go_en)
-begin
-   if(!go_en)
-      data   <=   0;
-   else
-   begin
-      if(iCLK_n)
-      begin
-         if (cont == 2)
-            data   <=   channel[2];
-         else if (cont == 3)
-            data   <=   channel[1];
-         else if (cont == 4)
-            data   <=   channel[0];
-         else
-            data   <=   0;
-      end
-   end
-end
-
-always@(posedge iCLK or negedge go_en)
-begin
-   if(!go_en)
-   begin
-      adc_data   <=   0;
-   end
-   else
-   if(iCLK)
-      begin
-         if (m_cont == 4)
-            adc_data[11]   <=   iDOUT;
-         else if (m_cont == 5)
-            adc_data[10]   <=   iDOUT;
-         else if (m_cont == 6)
-            adc_data[9]      <=   iDOUT;
-         else if (m_cont == 7)
-            adc_data[8]      <=   iDOUT;
-         else if (m_cont == 8)
-            adc_data[7]      <=   iDOUT;
-         else if (m_cont == 9)
-            adc_data[6]      <=   iDOUT;
-         else if (m_cont == 10)
-            adc_data[5]      <=   iDOUT;
-         else if (m_cont == 11)
-            adc_data[4]      <=   iDOUT;
-         else if (m_cont == 12)
-            adc_data[3]      <=   iDOUT;
-         else if (m_cont == 13)
-            adc_data[2]      <=   iDOUT;
-         else if (m_cont == 14)
-            adc_data[1]      <=   iDOUT;
-         else if (m_cont == 15)
-            adc_data[0]      <=   iDOUT;
-         else if (m_cont == 1)
-            begin                  
-               if ( adc_counter < 32'd20 )
-               begin
-                  adc_counter <= adc_counter + 1'b1;
-               end
-               else
-               begin         
-                  if (channel == 3'd0)
-                     oADC_12_bit_channel_0 <= adc_data;
-                  else if (channel == 3'd1)
-                     oADC_12_bit_channel_1 <= adc_data;
-                  else if (channel == 3'd2)
-                     oADC_12_bit_channel_2 <= adc_data;
-                  else if (channel == 3'd3)
-                     oADC_12_bit_channel_3 <= adc_data;
-                  else if (channel == 3'd4)
-                     oADC_12_bit_channel_4 <= adc_data;
-                  else if (channel == 3'd5)
-                     oADC_12_bit_channel_5 <= adc_data;
-                  else if (channel == 3'd6)
-                     oADC_12_bit_channel_6 <= adc_data;
-                  else if (channel == 3'd7)
-                     oADC_12_bit_channel_7 <= adc_data;
-               
-                  adc_counter <= 32'd0;
-                  channel <= channel + 1'b1;
-               end
-            end
-      end
-end
+	always@(negedge iCLK)
+	begin
+		if(iRST)
+		begin
+			count <= 0;
+			
+		end
+		else
+		begin
+			count <= count + 1'b1;
+			case (count)
+				4'd3: begin
+					data_out <= ch_config[3];
+				end
+				4'd4: begin
+					data_out <= ch_config[2];
+				end
+				4'd5: begin
+					data_out <= ch_config[1];
+				end
+				4'd6: begin
+					data_out <= ch_config[0];
+				end
+				4'd7: begin
+					data_out <= uni;
+				end
+				4'd8: begin
+					data_out <= slp;
+				end
+			endcase
+		end
+	end
+	
+	always@(posedge iCLK) begin
+		if (iRST) begin
+			adc_data <= 12'b0;
+		end
+		else
+		begin
+			case (count)
+				4'd0: begin
+					oADC_12_bit_channel_0 <= adc_data;
+					oADC_12_bit_channel_1 <= adc_data;
+					oADC_12_bit_channel_2 <= adc_data;
+					oADC_12_bit_channel_3 <= adc_data;
+					oADC_12_bit_channel_4 <= adc_data;
+					oADC_12_bit_channel_5 <= adc_data;
+					oADC_12_bit_channel_6 <= adc_data;
+					oADC_12_bit_channel_7 <= adc_data;
+				end
+				4'd4: begin
+					adc_data[11] <= iDOUT;
+				end
+				4'd5: begin
+					adc_data[10] <= iDOUT;
+				end
+				4'd6: begin
+					adc_data[9] <= iDOUT;
+				end
+				4'd7: begin
+					adc_data[8] <= iDOUT;
+				end
+				4'd8: begin
+					adc_data[7] <= iDOUT;
+				end
+				4'd9: begin
+					adc_data[6] <= iDOUT;
+				end
+				4'd10: begin
+					adc_data[5] <= iDOUT;
+				end
+				4'd11: begin
+					adc_data[4] <= iDOUT;
+				end
+				4'd12: begin
+					adc_data[3] <= iDOUT;
+				end
+				4'd13: begin
+					adc_data[2] <= iDOUT;
+				end
+				4'd14: begin
+					adc_data[1] <= iDOUT;
+				end
+				4'd15: begin
+					adc_data[0] <= iDOUT;
+				end
+			endcase
+		end	
+	end
 
 endmodule

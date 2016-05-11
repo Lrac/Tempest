@@ -13,7 +13,7 @@ module adc_tb();
 					oADC_12_bit_channel_6,
 					oADC_12_bit_channel_7;
 
-	adc_ctrl   dut(   
+	ADC_CTRL   dut(   
                iRST,
                iCLK,
                iCLK_n,
